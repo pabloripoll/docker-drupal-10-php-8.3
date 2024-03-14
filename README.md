@@ -376,4 +376,10 @@ $ sudo docker system prune
 Total reclaimed space: 423.4MB
 ```
 
-*(no need for pruning volume)*
+Prune Docker volume cache
+```bash
+$ sudo docker system prune
+
+...
+Total reclaimed space: 50.7MB
+```
