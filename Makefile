@@ -38,7 +38,7 @@ ports-check: ## shows this project ports availability on local machine
 	cd docker/mariadb && $(MAKE) port-check
 
 # -------------------------------------------------------------------------------------------------
-#  Drupal
+#  Drupal Service
 # -------------------------------------------------------------------------------------------------
 .PHONY: drupal-ssh drupal-set drupal-build drupal-start drupal-stop drupal-destroy
 
@@ -52,16 +52,16 @@ drupal-build: ## builds the Drupal PHP container from Docker image
 	cd docker/nginx-php && $(MAKE) build
 
 drupal-start: ## starts up the Drupal PHP container running
-	cd docker/nginx-php && $(MAKE) up
+	cd docker/nginx-php && $(MAKE) start
 
 drupal-stop: ## stops the Drupal PHP container but data won't be destroyed
 	cd docker/nginx-php && $(MAKE) stop
 
-drupal-destroy: ## stops and removes the Drupal PHP container from Docker network destroying its data
-	cd docker/nginx-php && $(MAKE) stop clear
+drupal-destroy: ## removes the Drupal PHP from Docker network destroying its data and Docker image
+	cd docker/nginx-php && $(MAKE) clear destroy
 
 # -------------------------------------------------------------------------------------------------
-#  Drupal - MariaDB Database
+#  Database Service
 # -------------------------------------------------------------------------------------------------
 .PHONY: database-ssh database-set database-build database-start database-stop database-destroy database-replace database-backup
 
@@ -96,7 +96,7 @@ database-backup: ## creates a .sql file from container database to the determine
 	echo ${C_BLU}"$(DOCKER_TITLE)"${C_END}" database "${C_GRN}"backup has been created."${C_END};
 
 # -------------------------------------------------------------------------------------------------
-#  Drupal Project
+#  Drupal & Database
 # -------------------------------------------------------------------------------------------------
 .PHONY: project-set project-build project-start project-stop project-destroy
 
@@ -114,14 +114,6 @@ project-stop: ## stops both Drupal and database containers but data won't be des
 
 project-destroy: ## stops and removes both Drupal and database containers from Docker network destroying their data
 	$(MAKE) database-destroy drupal-destroy
-
-# -------------------------------------------------------------------------------------------------
-#  Drupal Example Plugin
-# -------------------------------------------------------------------------------------------------
-.PHONY: plugin-zip
-
-plugin-zip:
-	cd resources/plugin/dev && zip -r ../pr-custom.zip *
 
 # -------------------------------------------------------------------------------------------------
 #  Repository Helper
