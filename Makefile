@@ -40,10 +40,7 @@ ports-check: ## shows this project ports availability on local machine
 # -------------------------------------------------------------------------------------------------
 #  Drupal
 # -------------------------------------------------------------------------------------------------
-.PHONY: drupal-install drupal-ssh drupal-set drupal-build drupal-start drupal-stop drupal-destroy
-
-drupal-install: ## enters the Drupal container shell
-	composer create-project drupal/recommended-project:10.2.4 .
+.PHONY: drupal-ssh drupal-set drupal-build drupal-start drupal-stop drupal-destroy
 
 drupal-ssh: ## enters the Drupal container shell
 	cd docker/nginx-php && $(MAKE) ssh

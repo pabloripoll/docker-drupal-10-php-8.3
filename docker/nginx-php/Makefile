@@ -25,7 +25,7 @@ DOCKER_COMPOSE?=$(DOCKER_USER) docker compose
 DOCKER_COMPOSE_RUN=$(DOCKER_COMPOSE) run --rm
 DOCKER_EXEC_TOOLS_APP=$(DOCKER_USER) docker exec -it $(DOCKER_CAAS) sh
 
-COMPOSER_INSTALL="composer update"
+COMPOSER_UPDATE="composer update"
 
 help: ## shows this Makefile help message
 	echo 'usage: make [target]'
@@ -70,7 +70,7 @@ env-set: ## sets docker .env file
 # -------------------------------------------------------------------------------------------------
 #  Container
 # -------------------------------------------------------------------------------------------------
-.PHONY: ssh build install dev up start first stop restart clear
+.PHONY: ssh build install update dev up start first stop restart clear
 
 ssh:
 	$(DOCKER_EXEC_TOOLS_APP)
@@ -79,6 +79,9 @@ build:
 	cd docker && $(DOCKER_COMPOSE) up --build --no-recreate -d
 
 install:
+	cd docker && $(DOCKER_EXEC_TOOLS_APP) -c composer create-project drupal/recommended-project:10.2.4 .
+
+update:
 	cd docker && $(DOCKER_EXEC_TOOLS_APP) -c $(COMPOSER_INSTALL)
 
 dev:
