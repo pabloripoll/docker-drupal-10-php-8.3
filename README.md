@@ -6,7 +6,7 @@
     </a>
 </div>
 
-# Drupal 10 with PHP FPM 8+
+# Docker Drupal 10 with PHP FPM 8+
 
 Docker container image for Drupal development
 
