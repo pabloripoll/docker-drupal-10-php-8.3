@@ -26,7 +26,7 @@ As client end user both services can be accessed through `localhost:${PORT}` but
 
 ### Docker Database Container Service
 
-To connect this service to a SQL database, it can be use the following [MariaDB 10.11](https://mariadb.com/kb/en/changes-improvements-in-mariadb-1011/) service:
+To connect this service to a SQL database, it can be used the following [MariaDB 10.11](https://mariadb.com/kb/en/changes-improvements-in-mariadb-1011/) service:
 - [https://github.com/pabloripoll/docker-mariadb-10.11](https://github.com/pabloripoll/docker-mariadb-10.11)
 
 ### Project objetives with Docker
