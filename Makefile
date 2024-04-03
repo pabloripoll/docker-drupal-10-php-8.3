@@ -33,9 +33,8 @@ hostname: ## shows local machine ip
 fix-permission: ## sets project directory permission
 	$(DOCKER_USER) chown -R ${USER}: $(ROOT_DIR)/
 
-ports-check: ## shows this project ports availability on local machine
+host-check: ## shows this project ports availability on local machine
 	cd docker/nginx-php && $(MAKE) port-check
-	cd docker/mariadb && $(MAKE) port-check
 
 # -------------------------------------------------------------------------------------------------
 #  Drupal Service
@@ -59,61 +58,6 @@ drupal-stop: ## stops the Drupal PHP container but data won't be destroyed
 
 drupal-destroy: ## removes the Drupal PHP from Docker network destroying its data and Docker image
 	cd docker/nginx-php && $(MAKE) clear destroy
-
-# -------------------------------------------------------------------------------------------------
-#  Database Service
-# -------------------------------------------------------------------------------------------------
-.PHONY: database-ssh database-set database-build database-start database-stop database-destroy database-replace database-backup
-
-database-ssh: ## enters the database container shell
-	cd docker/mariadb && $(MAKE) ssh
-
-database-set: ## sets the database enviroment file to build the container
-	cd docker/mariadb && $(MAKE) env-set
-
-database-build: ## builds the database container from Docker image
-	cd docker/mariadb && $(MAKE) build
-
-database-start: ## starts up the database container running
-	cd docker/mariadb && $(MAKE) up
-
-database-stop: ## stops the database container but data won't be destroyed
-	cd docker/mariadb && $(MAKE) stop
-
-database-destroy: ## stops and removes the database container from Docker network destroying its data
-	cd docker/mariadb && $(MAKE) stop clear
-
-database-install: ## installs an initialized database copying the determined .sql file into the container by raplacing it
-	cd docker/mariadb && $(MAKE) sql-install
-	echo ${C_BLU}"$(DOCKER_TITLE)"${C_END}" database has been "${C_GRN}"installed."${C_END};
-
-database-replace: ## replaces container database copying the determined .sql file into the container by raplacing it
-	cd docker/mariadb && $(MAKE) sql-replace
-	echo ${C_BLU}"$(DOCKER_TITLE)"${C_END}" database has been "${C_GRN}"replaced."${C_END};
-
-database-backup: ## creates a .sql file from container database to the determined local host directory
-	cd docker/mariadb && $(MAKE) sql-backup
-	echo ${C_BLU}"$(DOCKER_TITLE)"${C_END}" database "${C_GRN}"backup has been created."${C_END};
-
-# -------------------------------------------------------------------------------------------------
-#  Drupal & Database
-# -------------------------------------------------------------------------------------------------
-.PHONY: project-set project-build project-start project-stop project-destroy
-
-project-set: ## sets both Drupal and database .env files used by docker-compose.yml
-	$(MAKE) drupal-set database-set
-
-project-build: ## builds both Drupal and database containers from their Docker images
-	$(MAKE) drupal-set database-set database-build drupal-build
-
-project-start: ## starts up both Drupal and database containers running
-	$(MAKE) database-start drupal-start
-
-project-stop: ## stops both Drupal and database containers but data won't be destroyed
-	$(MAKE) database-stop drupal-stop
-
-project-destroy: ## stops and removes both Drupal and database containers from Docker network destroying their data
-	$(MAKE) database-destroy drupal-destroy
 
 # -------------------------------------------------------------------------------------------------
 #  Repository Helper
