@@ -14,7 +14,7 @@ The connection between container is as [Host Network](https://docs.docker.com/ne
 
 As client end user both services can be accessed through `localhost:${PORT}` but the connection between containers is through the `${HOSTNAME}:${PORT}`.
 
-### Laravel Docker Container Service
+### Drupal Container Service
 
 - [Drupal 10.2.4](https://www.drupal.org/docs/getting-started/installing-drupal)
 
@@ -24,12 +24,12 @@ As client end user both services can be accessed through `localhost:${PORT}` but
 
 - [Alpine Linux 3.19](https://www.alpinelinux.org/)
 
-### Docker Database Container Service
+### Database Container Service
 
 To connect this service to a SQL database, it can be used the following [MariaDB 10.11](https://mariadb.com/kb/en/changes-improvements-in-mariadb-1011/) service:
 - [https://github.com/pabloripoll/docker-mariadb-10.11](https://github.com/pabloripoll/docker-mariadb-10.11)
 
-### Project objetives with Docker
+### Project objetives
 
 * Built on the lightweight and secure Alpine 3.19 [2024 release](https://www.alpinelinux.org/posts/Alpine-3.19.1-released.html) Linux distribution
 * Multi-platform, supporting AMD4, ARMv6, ARMv7, ARM64
