@@ -44,7 +44,7 @@ To connect this service to a SQL database, it can be used the following [MariaDB
 
 #### PHP config
 
-To use a different PHP 8 version the following [Dockerfile](docker/nginx-php/docker/Dockerfile) arguments and variable must be modified:
+To use a different PHP 8 version the following [Dockerfile](docker/nginx-php/docker/Dockerfile) arguments and variable has to be modified:
 ```Dockerfile
 ARG PHP_VERSION=8.3
 ARG PHP_ALPINE=83
@@ -52,7 +52,7 @@ ARG PHP_ALPINE=83
 ENV PHP_V="php83"
 ```
 
-And must be inform to [Supervisor Config](docker/nginx-php/docker/config/supervisord.conf) the FPM version to run.
+Also, it has to be informed to [Supervisor Config](docker/nginx-php/docker/config/supervisord.conf) the PHP-FPM version to run.
 ```bash
 ...
 [program:php-fpm]
