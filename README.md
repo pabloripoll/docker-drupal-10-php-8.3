@@ -313,9 +313,25 @@ Total reclaimed space: 0MB
 
 ## Custom database service usage
 
-In case of using the repository [https://github.com/pabloripoll/docker-mariadb-10.11](https://github.com/pabloripoll/docker-mariadb-10.11) as database service, complete the application mysql database connection params in [laravel/.env](laravel/.env) file.
+In case of using the repository [https://github.com/pabloripoll/docker-mariadb-10.11](https://github.com/pabloripoll/docker-mariadb-10.11) as database service, complete the application mysql database connection params in [web/sites/default/settings.php](web/sites/default/settings.php) at the end of the file.
 
 Use local hostname IP `$ make hostname` to set the database host IP.
+
+```php
+...
+$databases['default']['default'] = array (
+  'database' => 'mariadb',
+  'username' => 'mariadb',
+  'password' => '123456',
+  'prefix' => 'dp_',
+  'host' => '192.168.1.41',
+  'port' => '8880',
+  'isolation_level' => 'READ COMMITTED',
+  'driver' => 'mysql',
+  'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+);
+```
 
 ### Dumping Database
 
