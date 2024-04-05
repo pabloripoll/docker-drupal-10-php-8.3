@@ -37,32 +37,32 @@ host-check: ## shows this project ports availability on local machine
 	cd docker/nginx-php && $(MAKE) port-check
 
 # -------------------------------------------------------------------------------------------------
-#  Drupal Service
+#  Application Service
 # -------------------------------------------------------------------------------------------------
 .PHONY: drupal-ssh drupal-set drupal-build drupal-start drupal-stop drupal-destroy
 
-drupal-ssh: ## enters the Drupal container shell
+drupal-ssh: ## enters the application container shell
 	cd docker/nginx-php && $(MAKE) ssh
 
-drupal-set: ## sets the Drupal PHP enviroment file to build the container
+drupal-set: ## sets the application PHP enviroment file to build the container
 	cd docker/nginx-php && $(MAKE) env-set
 
-drupal-build: ## builds the Drupal PHP container from Docker image
-	cd docker/nginx-php && $(MAKE) build
+drupal-create: ## creates the application PHP container from Docker image
+	cd docker/nginx-php && $(MAKE) env-set build up
 
-drupal-start: ## starts up the Drupal PHP container running
+drupal-start: ## starts the application PHP container running
 	cd docker/nginx-php && $(MAKE) start
 
-drupal-stop: ## stops the Drupal PHP container but data won't be destroyed
+drupal-stop: ## stops the application PHP container but data will not be destroyed
 	cd docker/nginx-php && $(MAKE) stop
 
-drupal-destroy: ## removes the Drupal PHP from Docker network destroying its data and Docker image
+drupal-destroy: ## removes the application PHP from Docker network destroying its data and Docker image
 	cd docker/nginx-php && $(MAKE) clear destroy
 
-drupal-install: ## installs set version of Laravel into container
+drupal-install: ## installs the application pre-defined version with its dependency packages into container
 	cd docker/nginx-php && $(MAKE) app-install
 
-drupal-update: ## updates set version of Laravel into container
+drupal-update: ## updates the application dependency packages into container
 	cd docker/nginx-php && $(MAKE) app-update
 
 # -------------------------------------------------------------------------------------------------
