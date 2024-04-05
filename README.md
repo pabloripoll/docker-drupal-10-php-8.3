@@ -139,22 +139,60 @@ $ make help
 usage: make [target]
 
 targets:
-Makefile  help                     shows this Makefile help message
-Makefile  hostname                 shows local machine ip
-Makefile  fix-permission           sets project directory permission
-Makefile  ports-check              shows this project ports availability on local machine
-Makefile  drupal-ssh               enters the Drupal container shell
-Makefile  drupal-set               sets the Drupal PHP enviroment file to build the container
-Makefile  drupal-build             builds the Drupal PHP container from Docker image
-Makefile  drupal-start             starts up the Drupal PHP container running
-Makefile  drupal-stop              stops the Drupal PHP container but data will not be destroyed
-Makefile  drupal-destroy           stops and removes the Drupal PHP container from Docker network destroying its data
-Makefile  repo-flush               clears local git repository cache specially to update .gitignore
+Makefile  help                    shows this Makefile help message
+Makefile  hostname                shows local machine ip
+Makefile  fix-permission          sets project directory permission
+Makefile  host-check              shows this project ports availability on local machine
+Makefile  drupal-ssh              enters the application container shell
+Makefile  drupal-set              sets the application PHP enviroment file to build the container
+Makefile  drupal-create           creates the application PHP container from Docker image
+Makefile  drupal-start            starts the application PHP container running
+Makefile  drupal-stop             stops the application PHP container but data will not be destroyed
+Makefile  drupal-destroy          removes the application PHP from Docker network destroying its data and Docker image
+Makefile  drupal-install          installs the application pre-defined version with its dependency packages into container
+Makefile  drupal-update           updates the application dependency packages into container
+Makefile  database-install        installs into container database the init sql file from resources/database
+Makefile  database-replace        replaces container database with the latest sql backup file from resources/database
+Makefile  database-backup         creates / replace a sql backup file from container database in resources/database
+Makefile  repo-flush              clears local git repository cache specially to update .gitignore
 ```
 
-Checkout local machine ports availability
+## Service Configuration
+
+Create a [DOTENV](.env) file from [.env.example](.env.example) and setup according to your project requirement the following variables
+```
+# REMOVE COMMENTS WHEN COPY THIS FILE
+
+# Leave it empty if no need for sudo user to execute docker commands
+DOCKER_USER=sudo
+
+# Container data for docker-compose.yml
+PROJECT_TITLE="DRUPAL"   # <- this name will be prompt for Makefile recipes
+PROJECT_ABBR="drupal"    # <- part of the service image tag - useful if similar services are running
+
+# Drupal container
+PROJECT_HOST="127.0.0.1"                   # <- for this project is not necessary
+PROJECT_PORT="8888"                        # <- port access container service on local machine
+PROJECT_CAAS="drupal-app"                  # <- container as a service name to build service
+PROJECT_PATH="../../../drupal"             # <- path where application is binded from container to local
+
+# Database service container
+DB_CAAS="mariadb"                          # <- name of the database docker container service to access by ssh
+DB_NAME="mariadb"                          # <- name of the database to copy or replace
+DB_ROOT="7c4a8d09ca3762af61e59520943d"     # <- database root password
+DB_BACKUP_NAME="drupal"                    # <- the name of the database backup or copy file
+DB_BACKUP_PATH="resources/database"        # <- path where database backup or copy resides
+```
+
+Exacute the following command to create the [docker/.env](docker/.env) file, required for building the container
 ```bash
-$ make ports-check
+$ make drupal-set
+DRUPAL docker-compose.yml .env file has been set.
+```
+
+Checkout port availability from the set enviroment
+```bash
+$ make host-check
 
 Checking configuration for DRUPAL container:
 DRUPAL > port:8888 is free to use.
@@ -167,100 +205,166 @@ $ make hostname
 192.168.1.41
 ```
 
-### Build the project
+## Create the application container service
+
 ```bash
 $ make drupal-create
 
 DRUPAL docker-compose.yml .env file has been set.
 
-[+] Building 49.7s (25/25)                                             docker:default
- => [drupal internal] load build definition from Dockerfile         0.0s
- => => transferring dockerfile: 2.47kB
+[+] Building 54.3s (26/26) FINISHED                                                 docker:default
+=> [nginx-php internal] load build definition from Dockerfile                       0.0s
+ => => transferring dockerfile: 2.78kB                                              0.0s
+ => [nginx-php internal] load metadata for docker.io/library/composer:latest        1.5s
+ => [nginx-php internal] load metadata for docker.io/library/php:8.3-fpm-alpine     1.5s
+ => [nginx-php internal] load .dockerignore                                         0.0s
+ => => transferring context: 108B                                                   0.0s
+ => [nginx-php internal] load build context                                         0.0s
+ => => transferring context: 8.30kB                                                 0.0s
+ => [nginx-php] FROM docker.io/library/composer:latest@sha256:63c0f08ca41370...
 ...
-=> => naming to docker.io/library/wp-app:php-8.3                       0.0s
+ => [nginx-php] exporting to image                                                  1.0s
+ => => exporting layers                                                             1.0s
+ => => writing image sha256:3c99f91a63edd857a0eaa13503c00d500fad57cf5e29ce1d...     0.0s
+ => => naming to docker.io/library/drupal-app:drupal-nginx-php                      0.0s
 [+] Running 1/2
- ⠇ Network wp-app_default  Created                                     0.8s
- ✔ Container wp-app        Started
+ ⠴ Network drupal-app_default  Created                                              0.4s
+ ✔ Container drupal-app        Started                                              0.3s
+[+] Running 1/0
+ ✔ Container drupal-app        Running
 ```
 
-### Running the project
+If container service has been built with the application content completed, accessing by browsing [http://localhost:8888/](http://localhost:8888/) will display the successful installation welcome page.
 
+If container has been built without application, the following Makefile recipe will install the application that is configure in [docker/nginx-php/Makefile](docker/nginx-php/Makefile) service
 ```bash
-$ make drupal-start
+$ make drupal-install
+```
 
-[+] Running 1/0
- ✔ Container wp-app  Running                      0.0s
- ```
+If container has been built with the application copy from repository, the following Makefile recipe will update the application dependencies
+```bash
+$ make drupal-update
+```
 
-Now, Drupal should be available on local machine by visiting [http://localhost:8888/index.php](http://localhost:8888/index.php)
+## Container Information
 
-## Docker Info
-
-Docker container
+Running container on Docker
 ```bash
 $ sudo docker ps -a
 CONTAINER ID   IMAGE      COMMAND    CREATED      STATUS      PORTS                                             NAMES
-ecd27aeae010   word...   "docker-php-entrypoi…"   3 mins...   9000/tcp, 0.0.0.0:8888->80/tcp, :::8888->80/tcp   drupal-app
-
+ecd27aeae010   drup...    "docker-php-entrypoi…"  1 min...    9000/tcp, 0.0.0.0:8888->80/tcp, :::8888->80/tcp   drupal-app
 ```
 
-Docker image
+Docker image size
 ```bash
 $ sudo docker images
 REPOSITORY   TAG           IMAGE ID       CREATED         SIZE
-word...-app  word...       373f6967199b   5 minutes ago   200MB
+drupal-app   drup...       373f6967199b   5 minutes ago   251MB
 ```
 
-Docker stats
+Stats regarding the amount of disk space used by the container
 ```bash
 $ sudo docker system df
 TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
-Images          1         1         532.2MB   0B (0%)
-Containers      1         1         25.03kB   0B (0%)
+Images          1         1         251.4MB   0B (0%)
+Containers      1         1         4B        0B (0%)
 Local Volumes   1         0         117.9MB   117.9MB (100%)
-Build Cache     39        0         10.21kB   10.21kB
+Build Cache     39        0         10.56kB   10.56kB
 ```
 
-## Stop Containers
+## Stopping the Container Service
 
-Using the following Makefile recipe stops application and database containers, keeping database persistance and application files binded without any loss
+Using the following Makefile recipe stops application from running, keeping database persistance and application files binded without any loss
 ```bash
 $ make drupal-stop
-
-[+] Killing 1/1
- ✔ Container drupal-app  Killed              0.5s
-Going to remove drupal-app
-[+] Removing 1/0
- ✔ Container drupal-app  Removed             0.0s
+[+] Stopping 1/1
+ ✔ Container drupal-app  Stopped                                                    0.5s
 ```
 
-## Remove Containers
+## Removing the Container Image
 
-To stop and remove both application and database containers from docker network use the following Makefile recipe
+To remove application container from Docker network use the following Makefile recipe *(Docker prune commands still needed to be applied manually)*
 ```bash
 $ make drupal-destroy
 
-[+] Killing 1/1
- ✔ Container drupal-app  Killed                   0.4s
-Going to remove drupal-app
 [+] Removing 1/0
- ✔ Container drupal-app  Removed                  0.0s
+ ✔ Container drupal-app  Removed                                                     0.0s
 [+] Running 1/1
- ✔ Network drupal-app_default  Removed
+ ✔ Network drupal-app_default  Removed                                               0.4s
+Untagged: drupal-app:drupal-nginx-php
+Deleted: sha256:3c99f91a63edd857a0eaa13503c00d500fad57cf5e29ce1da3210765259c35b1
 ```
 
-Prune Docker system cache
+Information on pruning Docker system cache
 ```bash
 $ sudo docker system prune
 
 ...
-Total reclaimed space: 423.4MB
+Total reclaimed space: 168.4MB
 ```
 
-Prune Docker volume cache
+Information on pruning Docker volume cache
 ```bash
 $ sudo docker system prune
 
 ...
-Total reclaimed space: 50.7MB
+Total reclaimed space: 0MB
+```
+
+## Custom database service usage
+
+In case of using the repository [https://github.com/pabloripoll/docker-mariadb-10.11](https://github.com/pabloripoll/docker-mariadb-10.11) as database service, complete the application mysql database connection params in [laravel/.env](laravel/.env) file.
+
+Use local hostname IP `$ make hostname` to set the database host IP.
+
+### Dumping Database
+
+Every time the containers are built up and running it will be like start from a fresh installation.
+
+You can continue using this repository with the pre-set database executing the command `$ make database-install`
+
+Follow the next recommendations to keep development stages clear and safe.
+
+*On first installation* once Drupal app is running with an admin back-office user set, I suggest to make a initialization database backup manually, saving as [resources/database/drupal-backup.sql](resources/database/drupal-backup.sql) but renaming as [resources/database/drupal-init.sql](resources/database/drupal-init.sql) to have that init database for any Docker compose rebuild / restart on next time.
+
+**The following three commands are very useful for *Continue Development*.**
+
+### DB Backup
+
+When the project is already in an advanced development stage, making a backup is recommended to keep lastest database registers.
+```bash
+$ make database-backup
+
+DATABASE backup has been created.
+```
+
+### DB Install
+
+If it is needed to restart the project from base installation step, you can use the init database .sql file to restart at that point in time. Although is not common to use, helps to check and test installation health.
+```bash
+$ make database-install
+
+DATABASE has been installed.
+```
+
+This repository comes with an initialized .sql with a main database user. See [.env.example](.env.example)
+
+### DB Replace
+
+Replace the database set on container with the latest .sql backup into current development stage.
+```bash
+$ make database-replace
+
+DATABASE has been replaced.
+```
+
+#### Notes
+
+- Notice that both files in [resources/database/](resources/database/) have the name that has been set on the main `.env` file to automate processes.
+
+- Remember that on any change in the main `.env` file will be required to execute the following Makefile recipe
+```bash
+$ make drupal-set
+
+DRUPAL docker-compose.yml .env file has been set.
 ```
