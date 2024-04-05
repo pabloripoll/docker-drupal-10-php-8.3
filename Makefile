@@ -59,6 +59,29 @@ drupal-stop: ## stops the Drupal PHP container but data won't be destroyed
 drupal-destroy: ## removes the Drupal PHP from Docker network destroying its data and Docker image
 	cd docker/nginx-php && $(MAKE) clear destroy
 
+drupal-install: ## installs set version of Laravel into container
+	cd docker/nginx-php && $(MAKE) app-install
+
+drupal-update: ## updates set version of Laravel into container
+	cd docker/nginx-php && $(MAKE) app-update
+
+# -------------------------------------------------------------------------------------------------
+#  Database Container Service
+# -------------------------------------------------------------------------------------------------
+.PHONY: database-install database-replace database-backup
+
+database-install: ## installs into container database the init sql file from resources/database
+	sudo docker exec -i $(DB_CAAS) sh -c 'exec mysql $(DB_NAME) -uroot -p"$(DB_ROOT)"' < $(DB_BACKUP_PATH)/$(DB_BACKUP_NAME)-init.sql
+	echo ${C_YEL}"DATABASE"${C_END}" has been installed."
+
+database-replace: ## replaces container database with the latest sql backup file from resources/database
+	sudo docker exec -i $(DB_CAAS) sh -c 'exec mysql $(DB_NAME) -uroot -p"$(DB_ROOT)"' < $(DB_BACKUP_PATH)/$(DB_BACKUP_NAME)-backup.sql
+	echo ${C_YEL}"DATABASE"${C_END}" has been replaced."
+
+database-backup: ## creates / replace a sql backup file from container database in resources/database
+	sudo docker exec $(DB_CAAS) sh -c 'exec mysqldump $(DB_NAME) -uroot -p"$(DB_ROOT)"' > $(DB_BACKUP_PATH)/$(DB_BACKUP_NAME)-backup.sql
+	echo ${C_YEL}"DATABASE"${C_END}" backup has been created."
+
 # -------------------------------------------------------------------------------------------------
 #  Repository Helper
 # -------------------------------------------------------------------------------------------------
