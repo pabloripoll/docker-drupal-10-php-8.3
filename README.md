@@ -6,13 +6,9 @@
 
 # Docker Drupal 10 with PHP FPM 8+
 
-Docker container image for Drupal development
+The objective of this repository is having a CaaS [Containers as a Service](https://www.ibm.com/topics/containers-as-a-service) to provide a "ready to use" container with the basic enviroment features to deploy a [Drupal](https://www.drupal.org/) application service under a lightweight Linux Apline image with Nginx server platform and [PHP-FPM](https://www.php.net/manual/en/install.fpm.php) for development stage requirements.
 
-The objective of this repository is having a CaaS [Containers as a Service](https://www.ibm.com/topics/containers-as-a-service) to provide a start up application with the basic enviroment features to deploy a php service running with Nginx and PHP-FPM in a container for [Drupal](https://www.drupal.org/) and another container with a MySQL database to follow the best practices on an easy scenario to understand and modify on development requirements.
-
-The connection between container is as [Host Network](https://docs.docker.com/network/drivers/host/) on `eth0`, thus both containers do not share networking or bridge configuration.
-
-As client end user both services can be accessed through `localhost:${PORT}` but the connection between containers is through the `${HOSTNAME}:${PORT}`.
+The container configuration is as [Host Network](https://docs.docker.com/network/drivers/host/) on `eth0` as [Bridge network](https://docs.docker.com/network/drivers/bridge/), thus it can be accessed through `localhost:${PORT}` by browsers but to connect with it or this with other services `${HOSTNAME}:${PORT}` will be required.
 
 ### Drupal Container Service
 
@@ -26,7 +22,9 @@ As client end user both services can be accessed through `localhost:${PORT}` but
 
 ### Database Container Service
 
-To connect this service to a SQL database, it can be used the following [MariaDB 10.11](https://mariadb.com/kb/en/changes-improvements-in-mariadb-1011/) service:
+This project does not include a database service for it is intended to connect to a database instance like in a cloud database environment or similar.
+
+To emulate a SQL database service it can be used the following [MariaDB 10.11](https://mariadb.com/kb/en/changes-improvements-in-mariadb-1011/) repository:
 - [https://github.com/pabloripoll/docker-mariadb-10.11](https://github.com/pabloripoll/docker-mariadb-10.11)
 
 ### Project objetives
